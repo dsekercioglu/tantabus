@@ -75,7 +75,9 @@ impl StandardEvaluator {
         let phase = Self::game_phase(board);
         let us = self.evaluate_for_side(board, board.side_to_move(), phase);
         let them = self.evaluate_for_side(board, !board.side_to_move(), phase);
-        Eval::cp(us - them)
+        let eval = (us - them) as i32;
+        let eval_scaled = eval * (148 - (phase / 4) as i32) / 100;
+        Eval::cp(eval_scaled as i16)
     }
 
     pub fn piece_value(&self, piece: Piece) -> Eval {
@@ -169,6 +171,7 @@ impl StandardEvaluator {
             midgame_value += self.midgame.bishop_pair;
             endgame_value += self.endgame.bishop_pair;
         }
+
 
         midgame_value += value;
         endgame_value += value;
